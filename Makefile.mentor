@@ -1,0 +1,51 @@
+all        : rtl        \
+             rtl1       \
+             rtl2       \
+             cell       \
+             cell1      \
+             cell2      \
+             inst       \
+             inst1      \
+             inst2
+ 
+ 
+compile:
+	vlog -libmap libmap.sv     -f source_code.f
+compile_rtl:
+	vlog -libmap libmap_rtl.sv -f source_code.f
+ 
+sim_rtl:
+	vsim -c rtl_config          -do run_all.sim
+sim_rtl1:
+	vsim -c rtl_config1         -do run_all.sim
+sim_rtl2:
+	vsim -c rtl_config2         -do run_all.sim
+ 
+sim_cell:
+	vsim -c cell_config         -do run_all.sim
+sim_cell1:
+	vsim -c cell_config1        -do run_all.sim        
+sim_cell2:
+	vsim -c cell_config2        -do run_all.sim        
+ 
+sim_inst:
+	vsim -c inst_config         -do run_all.sim
+sim_inst1:
+	vsim -c inst_config1        -do run_all.sim
+sim_inst2:
+	vsim -c inst_config2        -do run_all.sim
+ 
+rtl        : clean compile       sim_rtl
+rtl1       : clean compile_rtl   sim_rtl1
+rtl2       : clean compile_rtl   sim_rtl2
+ 
+cell       : clean compile_rtl   sim_cell
+cell1      : clean compile_rtl   sim_cell1
+cell2      : clean compile_rtl   sim_cell2
+ 
+inst       : clean compile_rtl   sim_inst
+inst1      : clean compile_rtl   sim_inst1
+inst2      : clean compile_rtl   sim_inst2
+ 
+clean:
+	rm -rf work transcript *Lib *~ *log .done

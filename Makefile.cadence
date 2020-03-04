@@ -1,0 +1,33 @@
+all        : rtl        \
+             rtl1       \
+             rtl2       \
+             cell       \
+             cell1      \
+             cell2      \
+             inst       \
+             inst1      \
+             inst2
+ 
+rtl   : clean
+	xrun   -libmap libmap.sv     -compcnfg configs.sv -f source_code_cadence.f -top rtl_config   -exit
+rtl1  : clean
+	xrun   -libmap libmap_rtl.sv -compcnfg configs.sv -f source_code_cadence.f -top rtl_config1  -exit
+rtl2  : clean
+	xrun   -libmap libmap_rtl.sv -compcnfg configs.sv -f source_code_cadence.f -top rtl_config2  -exit
+ 
+cell  : clean
+	xrun   -libmap libmap_rtl.sv -compcnfg configs.sv -f source_code_cadence.f -top cell_config  -exit
+cell1 : clean
+	xrun   -libmap libmap_rtl.sv -compcnfg configs.sv -f source_code_cadence.f -top cell_config1 -exit
+cell2 : clean
+	xrun   -libmap libmap_rtl.sv -compcnfg configs.sv -f source_code_cadence.f -top cell_config2 -exit
+ 
+inst  : clean
+	xrun   -libmap libmap_rtl.sv -compcnfg configs.sv -f source_code_cadence.f -top inst_config  -exit
+inst1 : clean
+	xrun   -libmap libmap_rtl.sv -compcnfg configs.sv -f source_code_cadence.f -top inst_config1 -exit
+inst2 : clean
+	xrun   -libmap libmap_rtl.sv -compcnfg configs.sv -f source_code_cadence.f -top inst_config2 -exit
+ 
+clean:
+	rm -rf .simvision INCA_libs irun.* simvision*.diag xcelium.d xrun.*

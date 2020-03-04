@@ -1,0 +1,41 @@
+all        : rtl        \
+             rtl1       \
+             rtl2       \
+             cell       \
+             cell1      \
+             cell2      \
+             inst       \
+             inst1      \
+             inst2
+ 
+allsvcomp:
+	vlogan -full64 -diag libconfig -sverilog -libmap libmap.sv     -f source_code.f
+ 
+allsvcomp_rtl:
+	vlogan -full64 -diag libconfig -sverilog -libmap libmap_rtl.sv -f source_code.f
+ 
+ 
+rtl   : clean allsvcomp
+	vcs -full64 -diag libconfig -debug_access -R rtl_config   -ucli -i run_vcs.do   
+rtl1  : clean allsvcomp_rtl
+	vcs -full64 -diag libconfig -debug_access -R rtl_config1  -ucli -i run_vcs.do   
+rtl2  : clean allsvcomp_rtl
+	vcs -full64 -diag libconfig -debug_access -R rtl_config2  -ucli -i run_vcs.do   
+ 
+cell  : clean allsvcomp_rtl
+	vcs -full64 -diag libconfig -debug_access -R cell_config  -ucli -i run_vcs.do 
+cell1 : clean allsvcomp_rtl
+	vcs -full64 -diag libconfig -debug_access -R cell_config1 -ucli -i run_vcs.do 
+cell2 : clean allsvcomp_rtl
+	vcs -full64 -diag libconfig -debug_access -R cell_config2 -ucli -i run_vcs.do 
+ 
+inst  : clean allsvcomp_rtl
+	vcs -full64 -diag libconfig -debug_access -R inst_config  -ucli -i run_vcs.do 
+inst1 : clean allsvcomp_rtl
+	vcs -full64 -diag libconfig -debug_access -R inst_config1 -ucli -i run_vcs.do 
+inst2 : clean allsvcomp_rtl
+	vcs -full64 -diag libconfig -debug_access -R inst_config2 -ucli -i run_vcs.do 
+ 
+ 
+clean:
+	rm -rf simv* csrc *Lib *~ *log .done .vlogan* ucli.key DVEfiles inter.vpd testlib

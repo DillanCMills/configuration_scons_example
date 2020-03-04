@@ -1,0 +1,15 @@
+WORK    > DEFAULT
+DEFAULT : work
+rtllib  : rtlLib
+gatelib : gateLib
+testlib : testLib
+ 
+-- NOTES
+-- We can just elaborate the configs and the tool looks to the synopsys_sim.setup
+-- for the libraries.  You can override that with -liblist but using the setup
+-- file is more straightforward.
+ 
+-- from the VCS documentation:
+-- Look for the libraries specified in -liblist at the command line, or
+--   look for the libraries specified in the synopsys_sim.setup file if
+--   -liblist is not passed.

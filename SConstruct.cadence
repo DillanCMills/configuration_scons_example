@@ -1,0 +1,93 @@
+EnsureSConsVersion(3, 0) # for Help() append
+ 
+import os
+ 
+Help('''
+==============================================================================
+SConstruct for Cadence configurations:
+ 
+Targets:
+    compile
+    compile_rtl
+    sim_rtl / rtl
+    sim_cell / cell
+    sim_inst / inst
+ 
+The simulation targets will automatically call the compile
+targets as needed due to their dependencies.
+ 
+Examples:
+    scons -f SConstruct.cadence     (runs every option by default)
+    scons -f SConstruct.cadence compile
+    scons -f SConstruct.cadence sim_cell --svconfig=1
+ 
+To clean:
+    scons -f SConstruct.cadence -c
+ 
+Notable SCons concepts:
+  - Since the Makefile was using an all-in-one command, we added a
+    builder to the xrun tool to handle running the all-in-one command
+  - We set XRUN_ALL_ARGS in our xrunEnv object, overriding the tool's default
+  - We tweaked the tool so that if it finds 'libmap' in the .sv filename,
+    it will append it with the '-libmap' flag
+  - We append a custom, per-target additional argument to XRUN_ALL_ARGS in
+    each of the xrunEnv.AllIn1() calls. Anything passed in after the target and
+    source lists overwrites the defaults in the tool and the xrunEnv object
+  - We dynamically select a dependency for the 'sim_rtl' target based on
+    the value passed in with the --svconfig option
+==============================================================================
+''', append=True) # Only works on newer install of SCons
+# reference site_tools/site_init.py for help on --<options> if using
+# older version of SCons
+ 
+##############
+### Env Setup
+xrunEnv = Environment(
+  ENV={
+    'PATH': os.environ['PATH'],
+    'HOME': os.environ['HOME'],
+  },
+  TOOLS=['xrun'],
+  SCANNERS=[svscan, fscan] + scanners,
+  WORK='work',
+  SVCONFIG = GetOption('svconfig'),
+  XRUN_ALL_ARGS=['-compcnfg', '-exit'],
+)
+ 
+ 
+#################
+### Simulate RTL
+sim_rtl = xrunEnv.AllIn1(
+  'simulate_rtl_cadence.log',
+  ['libmap_rtl.sv' if xrunEnv['SVCONFIG'] != '' else 'libmap.sv', 'configs.sv', 'source_code_cadence.f'],
+  XRUN_ALL_ARGS=xrunEnv['XRUN_ALL_ARGS'] + ['-top rtl_config${SVCONFIG}']
+)
+Alias('sim_rtl', sim_rtl)
+Alias('rtl', sim_rtl)
+ 
+ 
+##################
+### Simulate Cell
+sim_cell = xrunEnv.AllIn1(
+  'simulate_cell_cadence.log',
+  ['libmap_rtl.sv', 'configs.sv', 'source_code_cadence.f'],
+  XRUN_ALL_ARGS=xrunEnv['XRUN_ALL_ARGS'] + ['-top cell_config${SVCONFIG}']
+)
+Alias('sim_cell', sim_cell)
+Alias('cell', sim_cell)
+ 
+ 
+##################
+### Simulate Inst
+sim_inst = xrunEnv.AllIn1(
+  'simulate_inst_cadence.log',
+  ['libmap_rtl.sv', 'configs.sv', 'source_code_cadence.f'],
+  XRUN_ALL_ARGS=xrunEnv['XRUN_ALL_ARGS'] + ['-top inst_config${SVCONFIG}']
+)
+Alias('sim_inst', sim_inst)
+Alias('inst', sim_inst)
+ 
+ 
+#######################
+### Additional cleanup
+Clean([sim_rtl, sim_cell, sim_inst], [Glob('*~')])
